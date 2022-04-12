@@ -15,8 +15,8 @@
 }
 
 .grid {
-    width: 225px;
-    height: 225px;
+    width: 450px;
+    height: auto;
     /* border: solid 5px gray; */
 }
 
@@ -34,18 +34,18 @@
     align-items: center;
 }
 
-.red-tile {
+.grid-x.color1-tile {
     background-color: red;
 }
 
-.grey-tile {
-    background-color: grey;
+.grid-x.color2-tile {
+    background-color: yellow;
 }
 
-.red-scored-tile {
+.grid-x.color1-scored-tile {
     background-color: darkred;
 }
 
-.grey-scored-tile {
-    background-color: darkgray;
+.grid-x.color2-scored-tile {
+    background-color: orange;
 }
