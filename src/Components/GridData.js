@@ -2,15 +2,7 @@ import React from "react";
 
 const GridData = (x) => {
     let className = null;
-    // const [value, setValue] = useState(x.data);
-    // const data = value;
     const data = x.data;
-
-    // useEffect(() => {
-    //     if (x.data === 3 || x.data === 4) {
-    //         setValue(0);
-    //     }
-    // }, [x.data]);
 
     if (data === 0 || x.display === true) {
         className = "grid-x";
@@ -28,22 +20,3 @@ const GridData = (x) => {
 };
 
 export default GridData;
-
-// const currentTime = new Date().getTime();
-
-// const changeTileData = (value) => {
-//     if (x.data === 3 || x.data === 4) {
-//         captureTime = currentTime;
-//         console.log("Current: " + currentTime);
-//         console.log("Capture: " + captureTime);
-//     }
-
-//     let timeLength = currentTime - captureTime;
-
-//     console.log("Time length: " + timeLength);
-
-//     return value;
-// };
-
-// const timeLength = currentTime - captureTime;
-// console.log(timeLength);
