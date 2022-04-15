@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./App.scss";
 import GridRow from "./Components/GridRow";
 
@@ -11,8 +11,8 @@ const App = () => {
     ];
 
     const miniGridMap = [
-        [1, 2, 0, 0, 0, 0, 0, 0],
-        [2, 1, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 2, 2, 0, 0, 0],
+        [0, 0, 0, 2, 2, 0, 0, 0],
     ];
 
     const gridMap = [
@@ -21,8 +21,8 @@ const App = () => {
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 1, 0, 0, 0, 0, 0],
         [0, 0, 1, 0, 0, 1, 0, 0],
-        [0, 0, 2, 0, 0, 1, 0, 3],
-        [0, 0, 2, 0, 2, 1, 0, 4],
+        [0, 0, 2, 0, 0, 2, 0, 3],
+        [0, 0, 2, 2, 2, 1, 0, 4],
         [1, 0, 1, 2, 2, 1, 0, 5],
     ];
 
@@ -36,9 +36,7 @@ const App = () => {
         matrix.forEach((e, y) => {
             let miniGridData = [];
             e.forEach((data, x) => {
-                if (data !== 0) {
-                    miniGridData.push([data, [x, y]]);
-                }
+                data !== 0 && miniGridData.push([data, [x, y]]);
             });
             row.push(miniGridData);
         });
@@ -51,6 +49,7 @@ const App = () => {
 
         for (let i = 0; i < value.length; i++) {
             row = value[i].length;
+
             if (j === row) {
                 break;
             }
@@ -101,17 +100,50 @@ const App = () => {
         }
     };
 
+    const CheckScoredTile = (tile) => {};
+
+    const CollectTile = (matrix) => {
+        let tile1 = [];
+        let tile2 = [];
+        // let scoredTile = [];
+        // let visitedTile = [];
+
+        matrix.forEach((elem, i) => {
+            elem.forEach((data, j) => {
+                (data === 1 || data === 3) && tile1.push([data, [j, i]]);
+                (data === 2 || data === 4) && tile2.push([data, [j, i]]);
+            });
+        });
+
+        console.log(tile1);
+        console.log(tile2);
+        /* for (column)
+            for(row)
+            if (column >= 2 && row >= 2)
+        */
+    };
+
+    CollectTile(matrixB);
+
     const DropTile = () => {
         const tempMiniGridMap = CheckMiniGridMap(matrixA);
         let tempMatrix = matrixB;
-        for (let i = 0; i < tempMiniGridMap.length; i++) {
-            for (let j = 0; j < tempMiniGridMap.length; j++) {
-                const data = tempMiniGridMap[i][j][0];
-                const x = tempMiniGridMap[i][j][1][0];
-                const y = tempMiniGridMap[i][j][1][1];
-                tempMatrix[y][x] = data;
-            }
-        }
+        let gameOver = false;
+
+        tempMiniGridMap.forEach((elem) => {
+            elem.forEach((item) => {
+                const data = item[0];
+                const x = item[1][0];
+                const y = item[1][1];
+
+                tempMatrix[y][x] === 0
+                    ? (tempMatrix[y][x] = data)
+                    : (gameOver = true);
+            });
+        });
+
+        gameOver === true && console.log("Game Over");
+
         setMatrixB([...tempMatrix]);
         CheckGridMap(matrixB);
     };
