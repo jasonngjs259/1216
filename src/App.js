@@ -11,8 +11,8 @@ const App = () => {
     ];
 
     const miniGridMap = [
-        [0, 0, 0, 1, 2, 0, 0, 0],
-        [0, 0, 0, 2, 1, 0, 0, 0],
+        [1, 2, 0, 0, 0, 0, 0, 0],
+        [2, 1, 0, 0, 0, 0, 0, 0],
     ];
 
     const gridMap = [
@@ -25,10 +25,6 @@ const App = () => {
         [0, 0, 2, 0, 2, 1, 0, 4],
         [1, 0, 1, 2, 2, 1, 0, 5],
     ];
-
-    // let matrixA = miniGridMap;
-    // let matrixB = gridMap;
-    // let matrixC = nextGridMap;
 
     const [matrixA] = useState(miniGridMap);
     const [matrixB, setMatrixB] = useState(gridMap);
@@ -48,43 +44,6 @@ const App = () => {
         });
         return row;
     };
-
-    // let temp_x = [];
-
-    // for (let i = 0; i < tempMiniGridMap.length; i++) {
-    //     for (let j = 0; j < tempMiniGridMap[i].length; j++) {
-    //         if (!temp_x.includes(tempMiniGridMap[i][j][1][0])) {
-    //             temp_x.push(tempMiniGridMap[i][j][1][0]);
-    //         }
-    //     }
-    // }
-
-    // let temp_y = [];
-    // for (let i = 0; i < temp_x.length; i++) {
-    //     temp_y.push(checkGridMap(temp_x, i));
-    // }
-
-    // console.log(temp_y);
-
-    // const checkColHighestTile = (value) => {
-    //     let highestTile = [];
-    //     let visitedCol = [];
-
-    //     value.forEach((e, i) => {
-    //         e.forEach((data, j) => {
-    //             if (data !== emptyTile && !visitedCol.includes(j)) {
-    //                 highestTile.push([j, i]);
-    //                 visitedCol.push(j);
-    //             }
-    //         });
-    //     });
-
-    //     return highestTile;
-    // };
-
-    // console.log(checkColHighestTile(matrixB));
-
-    // const switchTile = () => {};
 
     const CheckGridMap = (value) => {
         let j = 0;
