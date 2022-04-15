@@ -1,24 +1,40 @@
+import { useEffect, useState } from "react";
 import "./App.scss";
 import GridRow from "./Components/GridRow";
 
 const App = () => {
+    const emptyTile = 0;
+
+    const nextGridMap = [
+        [2, 1],
+        [1, 2],
+    ];
+
     const miniGridMap = [
-        [0, 0, 0, 2, 1, 0, 0, 0],
         [0, 0, 0, 1, 2, 0, 0, 0],
+        [0, 0, 0, 2, 1, 0, 0, 0],
     ];
 
     const gridMap = [
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 2, 1, 0, 0],
-        [0, 0, 0, 0, 2, 1, 0, 0],
+        [0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0, 1, 0, 0],
+        [0, 0, 2, 0, 0, 1, 0, 3],
+        [0, 0, 2, 0, 2, 1, 0, 4],
+        [1, 0, 1, 2, 2, 1, 0, 5],
     ];
 
-    const checkMiniGridMap = (matrix) => {
+    // let matrixA = miniGridMap;
+    // let matrixB = gridMap;
+    // let matrixC = nextGridMap;
+
+    const [matrixA] = useState(miniGridMap);
+    const [matrixB, setMatrixB] = useState(gridMap);
+    const [matrixC] = useState(nextGridMap);
+
+    const CheckMiniGridMap = (matrix) => {
         let row = [];
 
         matrix.forEach((e, y) => {
@@ -33,83 +49,158 @@ const App = () => {
         return row;
     };
 
-    console.log(checkMiniGridMap(miniGridMap));
+    // let temp_x = [];
 
-    const checkGridMap = (value, i) => {
-        let temp_data = [];
+    // for (let i = 0; i < tempMiniGridMap.length; i++) {
+    //     for (let j = 0; j < tempMiniGridMap[i].length; j++) {
+    //         if (!temp_x.includes(tempMiniGridMap[i][j][1][0])) {
+    //             temp_x.push(tempMiniGridMap[i][j][1][0]);
+    //         }
+    //     }
+    // }
 
-        gridMap.map((e) => {
-            return e.forEach((data, x) => {
-                if (x === value[i]) {
-                    temp_data.push(data);
+    // let temp_y = [];
+    // for (let i = 0; i < temp_x.length; i++) {
+    //     temp_y.push(checkGridMap(temp_x, i));
+    // }
+
+    // console.log(temp_y);
+
+    // const checkColHighestTile = (value) => {
+    //     let highestTile = [];
+    //     let visitedCol = [];
+
+    //     value.forEach((e, i) => {
+    //         e.forEach((data, j) => {
+    //             if (data !== emptyTile && !visitedCol.includes(j)) {
+    //                 highestTile.push([j, i]);
+    //                 visitedCol.push(j);
+    //             }
+    //         });
+    //     });
+
+    //     return highestTile;
+    // };
+
+    // console.log(checkColHighestTile(matrixB));
+
+    // const switchTile = () => {};
+
+    const CheckGridMap = (value) => {
+        let j = 0;
+        let row = 0;
+
+        for (let i = 0; i < value.length; i++) {
+            row = value[i].length;
+            if (j === row) {
+                break;
+            }
+
+            while (j < row) {
+                let temp_tile = [];
+                let countEmptyTileRange = 0;
+
+                for (let k = 0; k < value.length; k++) {
+                    if (
+                        value[k][j] !== emptyTile &&
+                        countEmptyTileRange === 0
+                    ) {
+                        temp_tile.push(value[k][j]);
+                    } else if (
+                        temp_tile.length !== emptyTile &&
+                        value[k][j] === 0 &&
+                        k !== value.length - 1
+                    ) {
+                        countEmptyTileRange += 1;
+                        for (let x = 1; x <= temp_tile.length; x++) {
+                            value[k - x][j] = 0;
+                        }
+                        value[k][j] = 0;
+                    } else if (
+                        value[k][j] !== emptyTile &&
+                        countEmptyTileRange !== 0 &&
+                        value[k][j] !== 0
+                    ) {
+                        for (let x = 0; x < temp_tile.length; x++) {
+                            value[k - temp_tile.length + x][j] = temp_tile[x];
+                            countEmptyTileRange = 0;
+                        }
+                    } else if (
+                        temp_tile.length !== 0 &&
+                        countEmptyTileRange !== 0 &&
+                        k === value.length - 1
+                    ) {
+                        for (let x = 0; x < temp_tile.length; x++) {
+                            value[k - x][j] =
+                                temp_tile[temp_tile.length - 1 - x];
+                            countEmptyTileRange = 0;
+                        }
+                    }
                 }
-            });
-        });
-
-        return [value[i], temp_data];
-    };
-
-    const tempMiniGridMap = checkMiniGridMap(miniGridMap);
-
-    let temp_x = [];
-
-    for (let i = 0; i < tempMiniGridMap.length; i++) {
-        for (let j = 0; j < tempMiniGridMap[i].length; j++) {
-            if (!temp_x.includes(tempMiniGridMap[i][j][1][0])) {
-                temp_x.push(tempMiniGridMap[i][j][1][0]);
+                j += 1;
             }
         }
-    }
+    };
 
-    let temp_y = [];
-    for (let i = 0; i < temp_x.length; i++) {
-        temp_y.push(checkGridMap(temp_x, i));
-    }
-
-    console.log(temp_y);
+    const DropTile = () => {
+        const tempMiniGridMap = CheckMiniGridMap(matrixA);
+        let tempMatrix = matrixB;
+        for (let i = 0; i < tempMiniGridMap.length; i++) {
+            for (let j = 0; j < tempMiniGridMap.length; j++) {
+                const data = tempMiniGridMap[i][j][0];
+                const x = tempMiniGridMap[i][j][1][0];
+                const y = tempMiniGridMap[i][j][1][1];
+                tempMatrix[y][x] = data;
+            }
+        }
+        setMatrixB([...tempMatrix]);
+        CheckGridMap(matrixB);
+    };
 
     return (
         <>
             <div className="body">
                 <div className="justify-content-center">
                     <div className="grid">
-                        <div className="mb-1">
-                            {miniGridMap.map((e, i) => (
-                                <GridRow
-                                    key={i}
-                                    data={e}
-                                    display={false}
-                                    border={false}
-                                />
+                        <div className="no-border mb-1">
+                            {matrixA.map((e, i) => (
+                                <GridRow key={i} data={e} display={false} />
                             ))}
                         </div>
-                        {gridMap.map((e, i) => (
+                        {matrixB.map((e, i) => (
                             <GridRow key={i} data={e} display={false} />
                         ))}
                     </div>
 
                     <div className="grid">
                         <div className="mb-1">
-                            {miniGridMap.map((e, i) => (
-                                <GridRow
-                                    key={i}
-                                    data={e}
-                                    display={true}
-                                    border={true}
-                                />
+                            {matrixA.map((e, i) => (
+                                <GridRow key={i} data={e} display={true} />
                             ))}
                         </div>
-                        {gridMap.map((e, i) => (
+
+                        {matrixB.map((e, i) => (
                             <GridRow key={i} data={e} display={true} />
                         ))}
                     </div>
 
                     <div>
-                        <div style={{ marginTop: "3rem" }}>Score:</div>
-                        <div style={{ marginTop: "3rem" }}>Next:</div>
+                        <div className="mb-3">Score:</div>
+                        <div className="mb-3">
+                            <div>Next:</div>
+                            <div className="next-grid no-border">
+                                {matrixC.map((e, i) => (
+                                    <GridRow key={i} data={e} display={false} />
+                                ))}
+                            </div>
+                        </div>
 
-                        <div style={{ marginTop: "3rem" }}>
-                            <button>Drop it</button>
+                        <div className="mb-3">
+                            <button onClick={DropTile}>Drop it</button>
+                        </div>
+
+                        <div>
+                            <button>Lever</button>
                         </div>
                     </div>
                 </div>
