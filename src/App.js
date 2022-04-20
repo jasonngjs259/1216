@@ -11,8 +11,8 @@ const App = () => {
     ];
 
     const miniGridMap = [
-        [0, 0, 0, 2, 2, 0, 0, 0],
-        [0, 0, 0, 2, 2, 0, 0, 0],
+        [0, 2, 2, 0, 0, 0, 0, 0],
+        [0, 2, 2, 0, 0, 0, 0, 0],
     ];
 
     const gridMap = [
@@ -21,9 +21,9 @@ const App = () => {
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 1, 0, 0, 0, 0, 0],
         [0, 0, 1, 0, 0, 1, 0, 0],
-        [0, 0, 2, 0, 0, 2, 0, 3],
-        [0, 0, 2, 2, 2, 1, 0, 4],
-        [1, 0, 1, 2, 2, 1, 0, 5],
+        [0, 0, 2, 0, 0, 2, 0, 11],
+        [0, 0, 2, 2, 2, 1, 0, 12],
+        [1, 1, 1, 2, 2, 1, 0, 10],
     ];
 
     const [matrixA] = useState(miniGridMap);
@@ -100,8 +100,6 @@ const App = () => {
         }
     };
 
-    const CheckScoredTile = (tile) => {};
-
     const CollectTile = (matrix) => {
         let tile1 = [];
         let tile2 = [];
@@ -110,8 +108,8 @@ const App = () => {
 
         matrix.forEach((elem, i) => {
             elem.forEach((data, j) => {
-                (data === 1 || data === 3) && tile1.push([data, [j, i]]);
-                (data === 2 || data === 4) && tile2.push([data, [j, i]]);
+                (data === 1 || data === 11) && tile1.push([data, [j, i]]);
+                (data === 2 || data === 12) && tile2.push([data, [j, i]]);
             });
         });
 
@@ -123,7 +121,64 @@ const App = () => {
         */
     };
 
-    CollectTile(matrixB);
+    // CollectTile(matrixB);
+
+    const CheckLink = (i, j, matrix, tile, visited, linkedTile) => {
+        const currentNode = j;
+        const nextNode = j + 1;
+
+        if (matrix[i][currentNode] === tile && matrix[i][nextNode] === tile) {
+            if (!visited.includes(currentNode)) {
+                visited.push(currentNode, nextNode);
+                linkedTile.push([i, currentNode], [i, nextNode]);
+            } else {
+                visited.push(nextNode);
+                linkedTile.push([i, nextNode]);
+            }
+        }
+
+        return linkedTile;
+    };
+
+    const CheckSize = (matrix, tile) => {
+        let linkedTile = [];
+        let linkedArea = [];
+        let visitedNode = [];
+
+        for (let i = 0; i < matrix.length; i++) {
+            let visited = [];
+            for (let j = 0; j < matrix[i].length; j++) {
+                CheckLink(i, j, matrix, tile, visited, linkedTile);
+            }
+        }
+
+        for (let a = 0; a < linkedTile.length; a++) {
+            for (let b = a + 1; b < linkedTile.length; b++) {
+                if (
+                    (linkedTile[a][1] === linkedTile[b][1] &&
+                        linkedTile[a][0] + 1 === linkedTile[b][0]) ||
+                    (linkedTile[a][0] === linkedTile[b][0] &&
+                        linkedTile[a][1] + 1 === linkedTile[b][1] + 1)
+                ) {
+                    // linkedArea.push(linkedTile[a], linkedTile[b]);
+                    // visitedNode.push(linkedTile[a]);
+                    if (!visitedNode.includes(linkedTile[a])) {
+                        visitedNode.push(linkedTile[a], linkedTile[b]);
+                        linkedArea.push(linkedTile[a], linkedTile[b]);
+                    } else {
+                        visitedNode.push(linkedTile[b]);
+                        linkedArea.push(linkedTile[b]);
+                    }
+                }
+            }
+        }
+        console.log(visitedNode);
+        console.log(linkedTile);
+        console.log(linkedArea);
+    };
+
+    CheckSize(matrixB, 1);
+    CheckSize(matrixB, 2);
 
     const DropTile = () => {
         const tempMiniGridMap = CheckMiniGridMap(matrixA);

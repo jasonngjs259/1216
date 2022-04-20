@@ -11,11 +11,11 @@ const GridData = (x) => {
             setClassName("grid-x color1-tile");
         } else if (x.display === false && data === 2) {
             setClassName("grid-x color2-tile");
-        } else if (x.display === false && data === 3) {
+        } else if (x.display === false && data === 11) {
             setClassName("grid-x color1-scored-tile");
-        } else if (x.display === false && data === 4) {
+        } else if (x.display === false && data === 12) {
             setClassName("grid-x color2-scored-tile");
-        } else if (x.display === false && data === 5) {
+        } else if (x.display === false && data === 10) {
             setClassName("grid-x hidden-tile");
         }
     }, [data, x.display]);
