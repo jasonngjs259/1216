@@ -4,6 +4,10 @@ import GridRow from "./Components/GridRow";
 
 const App = () => {
     const emptyTile = 0;
+    const tile1 = 1;
+    const tile2 = 2;
+    const scoredTile1 = 11;
+    const scoredTile2 = 12;
 
     const nextGridMap = [
         [2, 1],
@@ -11,8 +15,8 @@ const App = () => {
     ];
 
     const miniGridMap = [
-        [0, 2, 2, 0, 0, 0, 0, 0],
-        [0, 2, 2, 0, 0, 0, 0, 0],
+        [0, 0, 0, 1, 1, 0, 0, 0],
+        [0, 0, 0, 1, 1, 0, 0, 0],
     ];
 
     const gridMap = [
@@ -21,14 +25,15 @@ const App = () => {
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 1, 0, 0, 0, 0, 0],
         [0, 0, 1, 0, 0, 1, 0, 0],
-        [0, 0, 2, 0, 0, 2, 0, 11],
-        [0, 0, 2, 2, 2, 1, 0, 12],
+        [0, 0, 2, 1, 0, 2, 0, 0],
+        [0, 0, 2, 2, 2, 1, 0, 0],
         [1, 1, 1, 2, 2, 1, 0, 10],
     ];
 
     const [matrixA] = useState(miniGridMap);
     const [matrixB, setMatrixB] = useState(gridMap);
     const [matrixC] = useState(nextGridMap);
+    const [score, setScore] = useState(0);
 
     const CheckMiniGridMap = (matrix) => {
         let row = [];
@@ -43,7 +48,7 @@ const App = () => {
         return row;
     };
 
-    const CheckGridMap = (value) => {
+    const ArrangeTile = (value) => {
         let j = 0;
         let row = 0;
 
@@ -100,58 +105,33 @@ const App = () => {
         }
     };
 
-    const CollectTile = (matrix) => {
-        let tile1 = [];
-        let tile2 = [];
-        // let scoredTile = [];
-        // let visitedTile = [];
-
-        matrix.forEach((elem, i) => {
-            elem.forEach((data, j) => {
-                (data === 1 || data === 11) && tile1.push([data, [j, i]]);
-                (data === 2 || data === 12) && tile2.push([data, [j, i]]);
-            });
-        });
-
-        console.log(tile1);
-        console.log(tile2);
-        /* for (column)
-            for(row)
-            if (column >= 2 && row >= 2)
-        */
-    };
-
-    // CollectTile(matrixB);
-
-    const CheckLink = (i, j, matrix, tile, visited, linkedTile) => {
-        const currentNode = j;
-        const nextNode = j + 1;
-
-        if (matrix[i][currentNode] === tile && matrix[i][nextNode] === tile) {
-            if (!visited.includes(currentNode)) {
-                visited.push(currentNode, nextNode);
-                linkedTile.push([i, currentNode], [i, nextNode]);
-            } else {
-                visited.push(nextNode);
-                linkedTile.push([i, nextNode]);
+    const CheckLinkedTile = (matrix, tile, scoredTile, linkedTile) => {
+        for (let i = 0; i < matrix.length; i++) {
+            let visited = [];
+            for (let j = 0; j < matrix[i].length; j++) {
+                if (
+                    (matrix[i][j] === tile && matrix[i][j + 1] === tile) ||
+                    (matrix[i][j] === scoredTile &&
+                        matrix[i][j + 1] === scoredTile) ||
+                    (matrix[i][j] === tile &&
+                        matrix[i][j + 1] === scoredTile) ||
+                    (matrix[i][j] === scoredTile && matrix[i][j + 1] === tile)
+                ) {
+                    if (!visited.includes(j)) {
+                        visited.push(j, j + 1);
+                        linkedTile.push([i, j], [i, j + 1]);
+                    } else {
+                        visited.push(j + 1);
+                        linkedTile.push([i, j + 1]);
+                    }
+                }
             }
         }
 
         return linkedTile;
     };
 
-    const CheckSize = (matrix, tile) => {
-        let linkedTile = [];
-        let linkedArea = [];
-        let visitedNode = [];
-
-        for (let i = 0; i < matrix.length; i++) {
-            let visited = [];
-            for (let j = 0; j < matrix[i].length; j++) {
-                CheckLink(i, j, matrix, tile, visited, linkedTile);
-            }
-        }
-
+    const CheckScoredArea = (linkedTile, visitedNode, scoredArea) => {
         for (let a = 0; a < linkedTile.length; a++) {
             for (let b = a + 1; b < linkedTile.length; b++) {
                 if (
@@ -160,25 +140,38 @@ const App = () => {
                     (linkedTile[a][0] === linkedTile[b][0] &&
                         linkedTile[a][1] + 1 === linkedTile[b][1] + 1)
                 ) {
-                    // linkedArea.push(linkedTile[a], linkedTile[b]);
-                    // visitedNode.push(linkedTile[a]);
                     if (!visitedNode.includes(linkedTile[a])) {
                         visitedNode.push(linkedTile[a], linkedTile[b]);
-                        linkedArea.push(linkedTile[a], linkedTile[b]);
+                        scoredArea.push(linkedTile[a], linkedTile[b]);
                     } else {
                         visitedNode.push(linkedTile[b]);
-                        linkedArea.push(linkedTile[b]);
+                        scoredArea.push(linkedTile[b]);
                     }
                 }
             }
         }
-        console.log(visitedNode);
-        console.log(linkedTile);
-        console.log(linkedArea);
+
+        return scoredArea;
     };
 
-    CheckSize(matrixB, 1);
-    CheckSize(matrixB, 2);
+    const TransformTile = (matrix, tile, scoredTile) => {
+        let linkedTile = [];
+        let scoredArea = [];
+        let visitedNode = [];
+
+        CheckLinkedTile(matrix, tile, scoredTile, linkedTile);
+        CheckScoredArea(linkedTile, visitedNode, scoredArea);
+
+        // console.log(linkedTile);
+        // console.log(scoredArea);
+
+        for (let k = 0; k < scoredArea.length; k++) {
+            matrix[scoredArea[k][0]][scoredArea[k][1]] = scoredTile;
+        }
+    };
+
+    TransformTile(matrixB, tile1, scoredTile1);
+    TransformTile(matrixB, tile2, scoredTile2);
 
     const DropTile = () => {
         const tempMiniGridMap = CheckMiniGridMap(matrixA);
@@ -200,7 +193,26 @@ const App = () => {
         gameOver === true && console.log("Game Over");
 
         setMatrixB([...tempMatrix]);
-        CheckGridMap(matrixB);
+        ArrangeTile(matrixB);
+    };
+
+    const PullLever = () => {
+        let tempMatrix = matrixB;
+        let calculateScoredTile = 0;
+
+        tempMatrix.forEach((elem, i) => {
+            elem.forEach((data, j) => {
+                if (data === scoredTile1 || data === scoredTile2) {
+                    calculateScoredTile += 1;
+                    tempMatrix[i][j] = emptyTile;
+                }
+            });
+        });
+
+        console.log(calculateScoredTile);
+        setScore(score + Math.pow(calculateScoredTile, 2));
+        setMatrixB([...tempMatrix]);
+        ArrangeTile(matrixB);
     };
 
     return (
@@ -231,7 +243,7 @@ const App = () => {
                     </div>
 
                     <div>
-                        <div className="mb-3">Score:</div>
+                        <div className="mb-3">Score:&nbsp;{score}</div>
                         <div className="mb-3">
                             <div>Next:</div>
                             <div className="next-grid no-border">
@@ -246,7 +258,7 @@ const App = () => {
                         </div>
 
                         <div>
-                            <button>Lever</button>
+                            <button onClick={PullLever}>Lever</button>
                         </div>
                     </div>
                 </div>
