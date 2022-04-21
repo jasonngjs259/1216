@@ -8,6 +8,8 @@ const App = () => {
     const tile2 = 2;
     const scoredTile1 = 11;
     const scoredTile2 = 12;
+    let dropCount = 0;
+    let comboCount = 1;
 
     const nextGridMap = [
         [2, 1],
@@ -173,6 +175,10 @@ const App = () => {
     TransformTile(matrixB, tile1, scoredTile1);
     TransformTile(matrixB, tile2, scoredTile2);
 
+    const DropCount = () => {};
+
+    const ComboCount = () => {};
+
     const DropTile = () => {
         const tempMiniGridMap = CheckMiniGridMap(matrixA);
         let tempMatrix = matrixB;
@@ -209,8 +215,8 @@ const App = () => {
             });
         });
 
-        console.log(calculateScoredTile);
-        setScore(score + Math.pow(calculateScoredTile, 2));
+        let tempScore = score + Math.pow(calculateScoredTile, 2);
+        setScore(tempScore);
         setMatrixB([...tempMatrix]);
         ArrangeTile(matrixB);
     };
