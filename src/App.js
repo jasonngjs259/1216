@@ -8,8 +8,6 @@ const App = () => {
     const tile2 = 2;
     const scoredTile1 = 11;
     const scoredTile2 = 12;
-    let dropCount = 0;
-    let comboCount = 1;
 
     const nextGridMap = [
         [2, 1],
@@ -17,25 +15,26 @@ const App = () => {
     ];
 
     const miniGridMap = [
-        [0, 0, 0, 1, 1, 0, 0, 0],
-        [0, 0, 0, 1, 1, 0, 0, 0],
+        [0, 0, 2, 0, 2, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
     ];
 
     const gridMap = [
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 1, 0, 0, 0, 0, 0],
-        [0, 0, 1, 0, 0, 1, 0, 0],
-        [0, 0, 2, 1, 0, 2, 0, 0],
-        [0, 0, 2, 2, 2, 1, 0, 0],
-        [1, 1, 1, 2, 2, 1, 0, 10],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 1, 0, 0],
+        [0, 2, 0, 0, 0, 2, 0, 0],
+        [0, 1, 2, 2, 2, 1, 0, 10],
     ];
 
     const [matrixA] = useState(miniGridMap);
     const [matrixB, setMatrixB] = useState(gridMap);
     const [matrixC] = useState(nextGridMap);
     const [score, setScore] = useState(0);
+    const [gameOver, setGameOver] = useState(false);
 
     const CheckMiniGridMap = (matrix) => {
         let row = [];
@@ -133,21 +132,40 @@ const App = () => {
         return linkedTile;
     };
 
-    const CheckScoredArea = (linkedTile, visitedNode, scoredArea) => {
+    const CheckScoredArea = (linkedTile, scoredArea) => {
+        let visitedNodeA = [];
+        let visitedNodeB = [];
+        let tempScoredArea = [];
+
         for (let a = 0; a < linkedTile.length; a++) {
             for (let b = a + 1; b < linkedTile.length; b++) {
                 if (
-                    (linkedTile[a][1] === linkedTile[b][1] &&
-                        linkedTile[a][0] + 1 === linkedTile[b][0]) ||
-                    (linkedTile[a][0] === linkedTile[b][0] &&
-                        linkedTile[a][1] + 1 === linkedTile[b][1] + 1)
+                    linkedTile[a][1] === linkedTile[b][1] &&
+                    linkedTile[a][0] + 1 === linkedTile[b][0]
                 ) {
-                    if (!visitedNode.includes(linkedTile[a])) {
-                        visitedNode.push(linkedTile[a], linkedTile[b]);
-                        scoredArea.push(linkedTile[a], linkedTile[b]);
+                    if (!visitedNodeA.includes(linkedTile[a])) {
+                        visitedNodeA.push(linkedTile[a], linkedTile[b]);
+                        tempScoredArea.push(linkedTile[a], linkedTile[b]);
                     } else {
-                        visitedNode.push(linkedTile[b]);
-                        scoredArea.push(linkedTile[b]);
+                        visitedNodeA.push(linkedTile[b]);
+                        tempScoredArea.push(linkedTile[b]);
+                    }
+                }
+            }
+        }
+
+        for (let a = 0; a < tempScoredArea.length; a++) {
+            for (let b = a + 1; b < tempScoredArea.length; b++) {
+                if (
+                    tempScoredArea[a][0] === tempScoredArea[b][0] &&
+                    tempScoredArea[a][1] + 1 === tempScoredArea[b][1]
+                ) {
+                    if (!visitedNodeB.includes(tempScoredArea[a])) {
+                        visitedNodeB.push(tempScoredArea[a], tempScoredArea[b]);
+                        scoredArea.push(tempScoredArea[a], tempScoredArea[b]);
+                    } else {
+                        visitedNodeB.push(tempScoredArea[b]);
+                        scoredArea.push(tempScoredArea[b]);
                     }
                 }
             }
@@ -159,10 +177,9 @@ const App = () => {
     const TransformTile = (matrix, tile, scoredTile) => {
         let linkedTile = [];
         let scoredArea = [];
-        let visitedNode = [];
 
         CheckLinkedTile(matrix, tile, scoredTile, linkedTile);
-        CheckScoredArea(linkedTile, visitedNode, scoredArea);
+        CheckScoredArea(linkedTile, scoredArea);
 
         // console.log(linkedTile);
         // console.log(scoredArea);
@@ -175,24 +192,28 @@ const App = () => {
     TransformTile(matrixB, tile1, scoredTile1);
     TransformTile(matrixB, tile2, scoredTile2);
 
-    const DropCount = () => {};
-
-    const ComboCount = () => {};
+    const ResetGame = () => {
+        setMatrixB(gridMap);
+    };
 
     const DropTile = () => {
         const tempMiniGridMap = CheckMiniGridMap(matrixA);
         let tempMatrix = matrixB;
-        let gameOver = false;
+        let reduceY = 0;
+
+        if (tempMiniGridMap[0].length === 0) {
+            reduceY = 1;
+        }
 
         tempMiniGridMap.forEach((elem) => {
             elem.forEach((item) => {
                 const data = item[0];
                 const x = item[1][0];
-                const y = item[1][1];
+                const y = item[1][1] - reduceY;
 
                 tempMatrix[y][x] === 0
                     ? (tempMatrix[y][x] = data)
-                    : (gameOver = true);
+                    : setGameOver(true);
             });
         });
 
@@ -263,8 +284,12 @@ const App = () => {
                             <button onClick={DropTile}>Drop it</button>
                         </div>
 
-                        <div>
+                        <div className="mb-3">
                             <button onClick={PullLever}>Lever</button>
+                        </div>
+
+                        <div>
+                            <button onClick={ResetGame}>Reset</button>
                         </div>
                     </div>
                 </div>
