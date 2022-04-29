@@ -15,19 +15,19 @@ const App = () => {
     ];
 
     const miniGridMap = [
-        [0, 0, 2, 0, 2, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 2, 0, 0, 0, 0, 0],
+        [0, 0, 2, 0, 0, 0, 0, 0],
     ];
 
     const gridMap = [
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
         [0, 1, 0, 0, 0, 0, 0, 0],
-        [0, 1, 0, 0, 0, 1, 0, 0],
-        [0, 2, 0, 0, 0, 2, 0, 0],
-        [0, 1, 2, 2, 2, 1, 0, 10],
+        [0, 1, 0, 0, 0, 0, 0, 0],
+        [0, 2, 0, 2, 0, 1, 0, 0],
+        [0, 2, 0, 2, 0, 2, 0, 0],
+        [0, 1, 1, 2, 2, 1, 0, 10],
     ];
 
     const [matrixA] = useState(miniGridMap);
@@ -106,25 +106,50 @@ const App = () => {
         }
     };
 
+    // const CheckLinkedTile = (matrix, tile, scoredTile, linkedTile) => {
+    //     for (let i = 0; i < matrix.length; i++) {
+    //         let visited = [];
+    //         for (let j = 0; j < matrix[i].length; j++) {
+    //             if (
+    //                 (matrix[i][j] === tile && matrix[i][j + 1] === tile) ||
+    //                 (matrix[i][j] === scoredTile &&
+    //                     matrix[i][j + 1] === scoredTile) ||
+    //                 (matrix[i][j] === tile &&
+    //                     matrix[i][j + 1] === scoredTile) ||
+    //                 (matrix[i][j] === scoredTile && matrix[i][j + 1] === tile)
+    //             ) {
+    //                 if (!visited.includes(j)) {
+    //                     visited.push(j, j + 1);
+    //                     linkedTile.push([i, j], [i, j + 1]);
+    //                 } else {
+    //                     visited.push(j + 1);
+    //                     linkedTile.push([i, j + 1]);
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     return linkedTile;
+    // };
+
     const CheckLinkedTile = (matrix, tile, scoredTile, linkedTile) => {
-        for (let i = 0; i < matrix.length; i++) {
-            let visited = [];
-            for (let j = 0; j < matrix[i].length; j++) {
+        for (let i = 0; i < matrix.length - 1; i++) {
+            for (let j = 0; j < matrix[i].length - 1; j++) {
                 if (
-                    (matrix[i][j] === tile && matrix[i][j + 1] === tile) ||
-                    (matrix[i][j] === scoredTile &&
-                        matrix[i][j + 1] === scoredTile) ||
-                    (matrix[i][j] === tile &&
-                        matrix[i][j + 1] === scoredTile) ||
-                    (matrix[i][j] === scoredTile && matrix[i][j + 1] === tile)
+                    (matrix[i][j] === tile || matrix[i][j] === scoredTile) &&
+                    (matrix[i][j + 1] === tile ||
+                        matrix[i][j + 1] === scoredTile) &&
+                    (matrix[i + 1][j] === tile ||
+                        matrix[i + 1][j] === scoredTile) &&
+                    (matrix[i + 1][j + 1] === tile ||
+                        matrix[i + 1][j + 1] === scoredTile)
                 ) {
-                    if (!visited.includes(j)) {
-                        visited.push(j, j + 1);
-                        linkedTile.push([i, j], [i, j + 1]);
-                    } else {
-                        visited.push(j + 1);
-                        linkedTile.push([i, j + 1]);
-                    }
+                    linkedTile.push(
+                        [i, j],
+                        [i, j + 1],
+                        [i + 1, j],
+                        [i + 1, j + 1]
+                    );
                 }
             }
         }
@@ -132,44 +157,84 @@ const App = () => {
         return linkedTile;
     };
 
+    // const functionA = () => {
+    //     const tempMatrix = matrixB;
+
+    //     for (let i = 0; i < tempMatrix.length - 1; i++) {
+    //         for (let j = 0; j < tempMatrix[i].length - 1; j++) {
+    //             if (
+    //                 (tempMatrix[i][j] === tile2 ||
+    //                     tempMatrix[i][j] === scoredTile2) &&
+    //                 (tempMatrix[i][j + 1] === tile2 ||
+    //                     tempMatrix[i][j + 1] === scoredTile2) &&
+    //                 (tempMatrix[i + 1][j] === tile2 ||
+    //                     tempMatrix[i + 1][j] === scoredTile2) &&
+    //                 (tempMatrix[i + 1][j + 1] === tile2 ||
+    //                     tempMatrix[i + 1][j + 1] === scoredTile2)
+    //             ) {
+    //                 console.log([i, j]);
+    //             }
+    //         }
+    //     }
+    // };
+
+    // functionA();
+
+    // const CheckScoredArea = (linkedTile, scoredArea) => {
+    //     let visitedNodeA = [];
+    //     let visitedNodeB = [];
+    //     let tempScoredArea = [];
+
+    //     for (let a = 0; a < linkedTile.length; a++) {
+    //         for (let b = a + 1; b < linkedTile.length; b++) {
+    //             if (
+    //                 linkedTile[a][1] === linkedTile[b][1] &&
+    //                 linkedTile[a][0] + 1 === linkedTile[b][0]
+    //             ) {
+    //                 if (!visitedNodeA.includes(linkedTile[a])) {
+    //                     visitedNodeA.push(linkedTile[a], linkedTile[b]);
+    //                     tempScoredArea.push(linkedTile[a], linkedTile[b]);
+    //                 } else {
+    //                     visitedNodeA.push(linkedTile[b]);
+    //                     tempScoredArea.push(linkedTile[b]);
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     console.log(tempScoredArea);
+
+    //     for (let a = 0; a < tempScoredArea.length; a++) {
+    //         for (let b = a + 1; b < tempScoredArea.length; b++) {
+    //             if (
+    //                 tempScoredArea[a][0] === tempScoredArea[b][0] &&
+    //                 tempScoredArea[a][1] + 1 === tempScoredArea[b][1]
+    //             ) {
+    //                 if (!visitedNodeB.includes(tempScoredArea[a])) {
+    //                     visitedNodeB.push(tempScoredArea[a], tempScoredArea[b]);
+    //                     scoredArea.push(tempScoredArea[a], tempScoredArea[b]);
+    //                 } else {
+    //                     visitedNodeB.push(tempScoredArea[b]);
+    //                     scoredArea.push(tempScoredArea[b]);
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     console.log(scoredArea);
+
+    //     return scoredArea;
+    // };
+
     const CheckScoredArea = (linkedTile, scoredArea) => {
-        let visitedNodeA = [];
-        let visitedNodeB = [];
-        let tempScoredArea = [];
+        let visitedNode = [];
 
-        for (let a = 0; a < linkedTile.length; a++) {
-            for (let b = a + 1; b < linkedTile.length; b++) {
-                if (
-                    linkedTile[a][1] === linkedTile[b][1] &&
-                    linkedTile[a][0] + 1 === linkedTile[b][0]
-                ) {
-                    if (!visitedNodeA.includes(linkedTile[a])) {
-                        visitedNodeA.push(linkedTile[a], linkedTile[b]);
-                        tempScoredArea.push(linkedTile[a], linkedTile[b]);
-                    } else {
-                        visitedNodeA.push(linkedTile[b]);
-                        tempScoredArea.push(linkedTile[b]);
-                    }
-                }
+        linkedTile.forEach((elem) => {
+            if (!visitedNode.includes(elem.toString())) {
+                visitedNode.push(elem.toString());
+                scoredArea.push(elem);
             }
-        }
-
-        for (let a = 0; a < tempScoredArea.length; a++) {
-            for (let b = a + 1; b < tempScoredArea.length; b++) {
-                if (
-                    tempScoredArea[a][0] === tempScoredArea[b][0] &&
-                    tempScoredArea[a][1] + 1 === tempScoredArea[b][1]
-                ) {
-                    if (!visitedNodeB.includes(tempScoredArea[a])) {
-                        visitedNodeB.push(tempScoredArea[a], tempScoredArea[b]);
-                        scoredArea.push(tempScoredArea[a], tempScoredArea[b]);
-                    } else {
-                        visitedNodeB.push(tempScoredArea[b]);
-                        scoredArea.push(tempScoredArea[b]);
-                    }
-                }
-            }
-        }
+        });
 
         return scoredArea;
     };
@@ -180,9 +245,6 @@ const App = () => {
 
         CheckLinkedTile(matrix, tile, scoredTile, linkedTile);
         CheckScoredArea(linkedTile, scoredArea);
-
-        // console.log(linkedTile);
-        // console.log(scoredArea);
 
         for (let k = 0; k < scoredArea.length; k++) {
             matrix[scoredArea[k][0]][scoredArea[k][1]] = scoredTile;
