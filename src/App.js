@@ -21,13 +21,13 @@ const App = () => {
 
     const gridMap = [
         [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 1, 0, 0, 0, 0, 0, 0],
-        [0, 1, 0, 0, 0, 0, 0, 0],
-        [0, 2, 0, 2, 0, 1, 0, 0],
-        [0, 2, 0, 2, 0, 2, 0, 0],
-        [0, 1, 1, 2, 2, 1, 0, 10],
+        [0, 0, 0, 0, 2, 0, 0, 0],
+        [0, 0, 0, 0, 2, 0, 0, 0],
+        [0, 1, 0, 0, 1, 0, 0, 0],
+        [0, 1, 0, 0, 1, 0, 0, 0],
+        [0, 2, 0, 0, 2, 1, 0, 0],
+        [0, 2, 0, 0, 2, 2, 0, 0],
+        [0, 11, 11, 2, 2, 1, 0, 10],
     ];
 
     const [matrixA] = useState(miniGridMap);
@@ -62,75 +62,24 @@ const App = () => {
 
             while (j < row) {
                 let temp_tile = [];
-                let countEmptyTileRange = 0;
 
                 for (let k = 0; k < value.length; k++) {
-                    if (
-                        value[k][j] !== emptyTile &&
-                        countEmptyTileRange === 0
-                    ) {
+                    if (value[k][j] !== emptyTile) {
                         temp_tile.push(value[k][j]);
-                    } else if (
-                        temp_tile.length !== emptyTile &&
-                        value[k][j] === 0 &&
-                        k !== value.length - 1
-                    ) {
-                        countEmptyTileRange += 1;
-                        for (let x = 1; x <= temp_tile.length; x++) {
-                            value[k - x][j] = 0;
-                        }
                         value[k][j] = 0;
-                    } else if (
-                        value[k][j] !== emptyTile &&
-                        countEmptyTileRange !== 0 &&
-                        value[k][j] !== 0
-                    ) {
-                        for (let x = 0; x < temp_tile.length; x++) {
-                            value[k - temp_tile.length + x][j] = temp_tile[x];
-                            countEmptyTileRange = 0;
-                        }
-                    } else if (
-                        temp_tile.length !== 0 &&
-                        countEmptyTileRange !== 0 &&
-                        k === value.length - 1
-                    ) {
-                        for (let x = 0; x < temp_tile.length; x++) {
-                            value[k - x][j] =
-                                temp_tile[temp_tile.length - 1 - x];
-                            countEmptyTileRange = 0;
-                        }
                     }
                 }
+
+                temp_tile.reverse();
+
+                for (let x = 0; x < temp_tile.length; x++) {
+                    value[value.length - 1 - x][j] = temp_tile[x];
+                }
+
                 j += 1;
             }
         }
     };
-
-    // const CheckLinkedTile = (matrix, tile, scoredTile, linkedTile) => {
-    //     for (let i = 0; i < matrix.length; i++) {
-    //         let visited = [];
-    //         for (let j = 0; j < matrix[i].length; j++) {
-    //             if (
-    //                 (matrix[i][j] === tile && matrix[i][j + 1] === tile) ||
-    //                 (matrix[i][j] === scoredTile &&
-    //                     matrix[i][j + 1] === scoredTile) ||
-    //                 (matrix[i][j] === tile &&
-    //                     matrix[i][j + 1] === scoredTile) ||
-    //                 (matrix[i][j] === scoredTile && matrix[i][j + 1] === tile)
-    //             ) {
-    //                 if (!visited.includes(j)) {
-    //                     visited.push(j, j + 1);
-    //                     linkedTile.push([i, j], [i, j + 1]);
-    //                 } else {
-    //                     visited.push(j + 1);
-    //                     linkedTile.push([i, j + 1]);
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     return linkedTile;
-    // };
 
     const CheckLinkedTile = (matrix, tile, scoredTile, linkedTile) => {
         for (let i = 0; i < matrix.length - 1; i++) {
@@ -156,75 +105,6 @@ const App = () => {
 
         return linkedTile;
     };
-
-    // const functionA = () => {
-    //     const tempMatrix = matrixB;
-
-    //     for (let i = 0; i < tempMatrix.length - 1; i++) {
-    //         for (let j = 0; j < tempMatrix[i].length - 1; j++) {
-    //             if (
-    //                 (tempMatrix[i][j] === tile2 ||
-    //                     tempMatrix[i][j] === scoredTile2) &&
-    //                 (tempMatrix[i][j + 1] === tile2 ||
-    //                     tempMatrix[i][j + 1] === scoredTile2) &&
-    //                 (tempMatrix[i + 1][j] === tile2 ||
-    //                     tempMatrix[i + 1][j] === scoredTile2) &&
-    //                 (tempMatrix[i + 1][j + 1] === tile2 ||
-    //                     tempMatrix[i + 1][j + 1] === scoredTile2)
-    //             ) {
-    //                 console.log([i, j]);
-    //             }
-    //         }
-    //     }
-    // };
-
-    // functionA();
-
-    // const CheckScoredArea = (linkedTile, scoredArea) => {
-    //     let visitedNodeA = [];
-    //     let visitedNodeB = [];
-    //     let tempScoredArea = [];
-
-    //     for (let a = 0; a < linkedTile.length; a++) {
-    //         for (let b = a + 1; b < linkedTile.length; b++) {
-    //             if (
-    //                 linkedTile[a][1] === linkedTile[b][1] &&
-    //                 linkedTile[a][0] + 1 === linkedTile[b][0]
-    //             ) {
-    //                 if (!visitedNodeA.includes(linkedTile[a])) {
-    //                     visitedNodeA.push(linkedTile[a], linkedTile[b]);
-    //                     tempScoredArea.push(linkedTile[a], linkedTile[b]);
-    //                 } else {
-    //                     visitedNodeA.push(linkedTile[b]);
-    //                     tempScoredArea.push(linkedTile[b]);
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     console.log(tempScoredArea);
-
-    //     for (let a = 0; a < tempScoredArea.length; a++) {
-    //         for (let b = a + 1; b < tempScoredArea.length; b++) {
-    //             if (
-    //                 tempScoredArea[a][0] === tempScoredArea[b][0] &&
-    //                 tempScoredArea[a][1] + 1 === tempScoredArea[b][1]
-    //             ) {
-    //                 if (!visitedNodeB.includes(tempScoredArea[a])) {
-    //                     visitedNodeB.push(tempScoredArea[a], tempScoredArea[b]);
-    //                     scoredArea.push(tempScoredArea[a], tempScoredArea[b]);
-    //                 } else {
-    //                     visitedNodeB.push(tempScoredArea[b]);
-    //                     scoredArea.push(tempScoredArea[b]);
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     console.log(scoredArea);
-
-    //     return scoredArea;
-    // };
 
     const CheckScoredArea = (linkedTile, scoredArea) => {
         let visitedNode = [];
