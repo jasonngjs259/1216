@@ -145,11 +145,12 @@ const App = () => {
     //     });
     // };
 
-    const calculateScoredAreaSize = () => {
+    const calculateScoredAreaSize = (tempMatrix, tile, scoredTile) => {
         let linkedTile = [];
         let scoredArea = [];
         let calculateScoredTileArea = 4;
 
+        CheckLinkedTile(tempMatrix, tile, scoredTile, linkedTile)
         CheckScoredArea(linkedTile, scoredArea, 2);
 
         console.log(linkedTile);
@@ -215,26 +216,29 @@ const App = () => {
     };
 
     const PullLever = () => {
-        let tempMatrix = matrixB;
+        const tempMatrix = matrixB;
 
-        calculateScoredAreaSize();
-
+        calculateScoredAreaSize(tempMatrix, tile1, scoredTile1);
+        calculateScoredAreaSize(tempMatrix, tile2, scoredTile2);
+    
         tempMatrix.forEach((elem, i) => {
-            elem.forEach((data, j) => {
-                if (data === scoredTile1 || data === scoredTile2) {
-                    tempMatrix[i][j] = emptyTile;
-                }
-            });
+          elem.forEach((data, j) => {
+            if (data === scoredTile1 || data === scoredTile2) {
+              tempMatrix[i][j] = emptyTile;
+            }
+          });
         });
-
+    
+        ArrangeTile(tempMatrix, emptyTile);
+        TransformTile(tempMatrix, tile1, scoredTile1);
+        TransformTile(tempMatrix, tile2, scoredTile2);
+    
         let tempScore = score;
-        scoredAreaSize.forEach((elem) => {
-            tempScore = tempScore + elem ** 2;
+        scoredAreaSize.forEach((element) => {
+          tempScore += element ** 2;
         });
         setScore(tempScore);
         setScoredAreaSize([]);
-        setMatrixB([...tempMatrix]);
-        ArrangeTile(matrixB);
     };
 
     return (
