@@ -15,19 +15,19 @@ const App = () => {
     ];
 
     const miniGridMap = [
-        [0, 0, 2, 0, 0, 0, 0, 0],
-        [0, 0, 2, 0, 0, 0, 0, 0],
+        [0, 0, 2, 2, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
     ];
 
     const gridMap = [
         [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 2, 0, 0, 0],
-        [0, 0, 0, 0, 2, 0, 0, 0],
-        [0, 1, 0, 0, 1, 0, 0, 0],
-        [0, 1, 0, 0, 1, 0, 0, 0],
-        [0, 2, 0, 0, 2, 1, 0, 0],
-        [0, 2, 0, 0, 2, 2, 0, 0],
-        [0, 11, 11, 2, 2, 1, 0, 10],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 1, 1, 0, 0],
+        [0, 1, 0, 0, 2, 2, 0, 0],
+        [2, 2, 0, 2, 2, 2, 0, 0],
+        [1, 1, 1, 2, 2, 1, 1, 0],
+        [1, 1, 2, 2, 1, 1, 1, 0],
+        [1, 1, 2, 2, 1, 1, 1, 10],
     ];
 
     const [matrixA] = useState(miniGridMap);
@@ -35,6 +35,7 @@ const App = () => {
     const [matrixC] = useState(nextGridMap);
     const [score, setScore] = useState(0);
     const [gameOver, setGameOver] = useState(false);
+    const [scoredAreaSize, setScoredAreaSize] = useState([]);
 
     const CheckMiniGridMap = (matrix) => {
         let row = [];
@@ -93,30 +94,78 @@ const App = () => {
                     (matrix[i + 1][j + 1] === tile ||
                         matrix[i + 1][j + 1] === scoredTile)
                 ) {
-                    linkedTile.push(
+                    linkedTile.push([
                         [i, j],
                         [i, j + 1],
                         [i + 1, j],
-                        [i + 1, j + 1]
-                    );
+                        [i + 1, j + 1],
+                    ]);
                 }
             }
         }
-
-        return linkedTile;
     };
 
-    const CheckScoredArea = (linkedTile, scoredArea) => {
+    const CheckScoredArea = (linkedTile, scoredArea, type) => {
         let visitedNode = [];
 
         linkedTile.forEach((elem) => {
-            if (!visitedNode.includes(elem.toString())) {
-                visitedNode.push(elem.toString());
-                scoredArea.push(elem);
+            let calculateScoredTile = 0;
+            elem.forEach((data) => {
+                if (!visitedNode.includes(data.toString()) && type === 1) {
+                    visitedNode.push(data.toString());
+                    scoredArea.push(data);
+                } else if (
+                    !visitedNode.includes(data.toString()) &&
+                    type === 2
+                ) {
+                    visitedNode.push(data.toString());
+                    calculateScoredTile += 1;
+                }
+            });
+
+            if (type === 2) {
+                scoredArea.push(calculateScoredTile);
             }
         });
+    };
 
-        return scoredArea;
+    // const CheckCalculateScoredArea = (linkedTile, tempScoredAreaSize) => {
+    //     let visitedNode = [];
+    //     let tempScoredAreaSize = [];
+
+    //     linkedTile.forEach((elem) => {
+    //         let calculateScoredTile = 0;
+    //         elem.forEach((data) => {
+    //             if (!visitedNode.includes(data.toString())) {
+    //                 visitedNode.push(data.toString());
+    //                 calculateScoredTile += 1;
+    //             }
+    //         });
+    //         tempScoredAreaSize.push(calculateScoredTile);
+    //     });
+    // };
+
+    const calculateScoredAreaSize = () => {
+        let linkedTile = [];
+        let scoredArea = [];
+        let calculateScoredTileArea = 4;
+
+        CheckScoredArea(linkedTile, scoredArea, 2);
+
+        console.log(linkedTile);
+        console.log(scoredArea);
+
+        for (let i = 0; i < scoredArea.length; i++) {
+            if (scoredArea[i + 1] !== 4 && i !== scoredArea.length - 1) {
+                calculateScoredTileArea =
+                    calculateScoredTileArea + scoredArea[i + 1];
+            } else if (scoredArea[i + 1] === 4 && i !== scoredArea.length - 1) {
+                scoredAreaSize.push(calculateScoredTileArea);
+                calculateScoredTileArea = 4;
+            } else if (i === scoredArea.length - 1) {
+                scoredAreaSize.push(calculateScoredTileArea);
+            }
+        }
     };
 
     const TransformTile = (matrix, tile, scoredTile) => {
@@ -124,7 +173,7 @@ const App = () => {
         let scoredArea = [];
 
         CheckLinkedTile(matrix, tile, scoredTile, linkedTile);
-        CheckScoredArea(linkedTile, scoredArea);
+        CheckScoredArea(linkedTile, scoredArea, 1);
 
         for (let k = 0; k < scoredArea.length; k++) {
             matrix[scoredArea[k][0]][scoredArea[k][1]] = scoredTile;
@@ -167,76 +216,78 @@ const App = () => {
 
     const PullLever = () => {
         let tempMatrix = matrixB;
-        let calculateScoredTile = 0;
+
+        calculateScoredAreaSize();
 
         tempMatrix.forEach((elem, i) => {
             elem.forEach((data, j) => {
                 if (data === scoredTile1 || data === scoredTile2) {
-                    calculateScoredTile += 1;
                     tempMatrix[i][j] = emptyTile;
                 }
             });
         });
 
-        let tempScore = score + Math.pow(calculateScoredTile, 2);
+        let tempScore = score;
+        scoredAreaSize.forEach((elem) => {
+            tempScore = tempScore + elem ** 2;
+        });
         setScore(tempScore);
+        setScoredAreaSize([]);
         setMatrixB([...tempMatrix]);
         ArrangeTile(matrixB);
     };
 
     return (
-        <>
-            <div className="body">
-                <div className="justify-content-center">
-                    <div className="grid">
-                        <div className="no-border mb-1">
-                            {matrixA.map((e, i) => (
-                                <GridRow key={i} data={e} display={false} />
-                            ))}
-                        </div>
-                        {matrixB.map((e, i) => (
+        <div className="body">
+            <div className="justify-content-center">
+                <div className="grid">
+                    <div className="no-border mb-1">
+                        {matrixA.map((e, i) => (
                             <GridRow key={i} data={e} display={false} />
                         ))}
                     </div>
+                    {matrixB.map((e, i) => (
+                        <GridRow key={i} data={e} display={false} />
+                    ))}
+                </div>
 
-                    <div className="grid">
-                        <div className="mb-1">
-                            {matrixA.map((e, i) => (
-                                <GridRow key={i} data={e} display={true} />
-                            ))}
-                        </div>
-
-                        {matrixB.map((e, i) => (
+                <div className="grid">
+                    <div className="mb-1">
+                        {matrixA.map((e, i) => (
                             <GridRow key={i} data={e} display={true} />
                         ))}
                     </div>
 
+                    {matrixB.map((e, i) => (
+                        <GridRow key={i} data={e} display={true} />
+                    ))}
+                </div>
+
+                <div>
+                    <div className="mb-3">Score:&nbsp;{score}</div>
+                    <div className="mb-3">
+                        <div>Next:</div>
+                        <div className="next-grid no-border">
+                            {matrixC.map((e, i) => (
+                                <GridRow key={i} data={e} display={false} />
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="mb-3">
+                        <button onClick={DropTile}>Drop it</button>
+                    </div>
+
+                    <div className="mb-3">
+                        <button onClick={PullLever}>Lever</button>
+                    </div>
+
                     <div>
-                        <div className="mb-3">Score:&nbsp;{score}</div>
-                        <div className="mb-3">
-                            <div>Next:</div>
-                            <div className="next-grid no-border">
-                                {matrixC.map((e, i) => (
-                                    <GridRow key={i} data={e} display={false} />
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="mb-3">
-                            <button onClick={DropTile}>Drop it</button>
-                        </div>
-
-                        <div className="mb-3">
-                            <button onClick={PullLever}>Lever</button>
-                        </div>
-
-                        <div>
-                            <button onClick={ResetGame}>Reset</button>
-                        </div>
+                        <button onClick={ResetGame}>Reset</button>
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 
