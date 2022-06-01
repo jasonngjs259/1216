@@ -157,6 +157,10 @@ const App = () => {
                                 [
                                     tempNewScoredArea[j][0],
                                     tempNewScoredArea[j][1] - 1,
+                                ].toString() === [linkedTile[k]].toString() ||
+                                [
+                                    tempNewScoredArea[j][0] - 1,
+                                    tempNewScoredArea[j][1],
                                 ].toString() === [linkedTile[k]].toString())
                         ) {
                             tempNewScoredArea.push(linkedTile[k]);
