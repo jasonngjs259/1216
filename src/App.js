@@ -21,10 +21,10 @@ const App = () => {
 
     const gridMap = [
         [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 1, 0, 0],
-        [0, 1, 0, 0, 2, 2, 0, 0],
-        [2, 2, 0, 2, 2, 2, 0, 0],
+        [2, 2, 0, 0, 0, 0, 0, 0],
+        [2, 2, 1, 1, 1, 1, 0, 0],
+        [2, 1, 1, 1, 2, 2, 0, 0],
+        [2, 2, 1, 2, 2, 2, 0, 0],
         [1, 1, 1, 2, 2, 1, 1, 0],
         [1, 1, 2, 2, 1, 1, 1, 0],
         [1, 1, 2, 2, 1, 1, 1, 10],
@@ -94,12 +94,12 @@ const App = () => {
                     (matrix[i + 1][j + 1] === tile ||
                         matrix[i + 1][j + 1] === scoredTile)
                 ) {
-                    linkedTile.push([
+                    linkedTile.push(
                         [i, j],
                         [i, j + 1],
                         [i + 1, j],
-                        [i + 1, j + 1],
-                    ]);
+                        [i + 1, j + 1]
+                    );
                 }
             }
         }
@@ -107,66 +107,178 @@ const App = () => {
 
     const CheckScoredArea = (linkedTile, scoredArea, type) => {
         let visitedNode = [];
+        let visitedNode2 = [];
+        let tempNewScoredArea = [];
+        let newScoredArea = [];
+        console.log(linkedTile);
 
         linkedTile.forEach((elem) => {
-            let calculateScoredTile = 0;
-            elem.forEach((data) => {
-                if (!visitedNode.includes(data.toString()) && type === 1) {
-                    visitedNode.push(data.toString());
-                    scoredArea.push(data);
-                } else if (
-                    !visitedNode.includes(data.toString()) &&
-                    type === 2
-                ) {
-                    visitedNode.push(data.toString());
-                    calculateScoredTile += 1;
-                }
-            });
+            // let calculateScoredTile = 0;
 
-            if (type === 2) {
-                scoredArea.push(calculateScoredTile);
+            if (!visitedNode.includes(elem.toString()) && type === 1) {
+                visitedNode.push(elem.toString());
+                scoredArea.push(elem);
+            } else if (!visitedNode.includes(elem.toString()) && type === 2) {
+                visitedNode.push(elem.toString());
             }
+
+            // if (type === 2) {
+            //     scoredArea.push(calculateScoredTile);
+            // }
         });
+
+        // console.log(visitedNode.length);
+
+        if (type === 2) {
+            while (visitedNode2.length < visitedNode.length) {
+                for (let i = 0; i < linkedTile.length; i++) {
+                    if (
+                        tempNewScoredArea.length === 0 &&
+                        !visitedNode2.includes(linkedTile[i].toString())
+                    ) {
+                        visitedNode2.push(linkedTile[i].toString());
+                        tempNewScoredArea.push(linkedTile[i]);
+                    }
+                }
+
+                for (let j = 0; j < tempNewScoredArea.length; j++) {
+                    for (let k = 0; k < linkedTile.length; k++) {
+                        // console.log(tempNewScoredArea[j]);
+                        if (
+                            !visitedNode2.includes(linkedTile[k].toString()) &&
+                            ([
+                                tempNewScoredArea[j][0] + 1,
+                                tempNewScoredArea[j][1],
+                            ].toString() === [linkedTile[k]].toString() ||
+                                [
+                                    tempNewScoredArea[j][0],
+                                    tempNewScoredArea[j][1] + 1,
+                                ].toString() === [linkedTile[k]].toString() ||
+                                [
+                                    tempNewScoredArea[j][0],
+                                    tempNewScoredArea[j][1] - 1,
+                                ].toString() === [linkedTile[k]].toString())
+                        ) {
+                            tempNewScoredArea.push(linkedTile[k]);
+                            visitedNode2.push(linkedTile[k].toString());
+                        }
+
+                        // console.log(
+                        //     [linkedTile[i][0], linkedTile[i][1]].toString()
+                        // );
+                        // console.log(
+                        //     [
+                        //         newScoredArea[j][0] + 1,
+                        //         newScoredArea[j][1],
+                        //     ].toString()
+                        // );
+                        // console.log(
+                        //     [
+                        //         newScoredArea[j][0],
+                        //         newScoredArea[j][1] + 1,
+                        //     ].toString()
+                        // );
+                    }
+                }
+                // console.log(tempNewScoredArea);
+                newScoredArea.push(tempNewScoredArea);
+                tempNewScoredArea = [];
+            }
+            console.log(newScoredArea);
+
+            for (let a = 0; a < newScoredArea.length; a++) {
+                scoredAreaSize.push(newScoredArea[a].length);
+            }
+            console.log(scoredAreaSize);
+        }
+
+        // if (type === 2) {
+        // for (let i = 0; i < linkedTile.length; i++) {
+        //     // console.log([linkedTile[i][0], linkedTile[i][1]].toString());
+        //     // console.log(
+        //     //     [linkedTile[i][0], linkedTile[i][1] + 1].toString()
+        //     // );
+
+        //     // if (!visitedNode2.includes(linkedTile[i].toString())) {
+        //     //     visitedNode2.push(linkedTile[i].toString());
+        //     //     // newScoredArea.push([linkedTile[i]]);
+        //     // }
+
+        //     if (newScoredArea.length === 0) {
+        //         newScoredArea.push([linkedTile[i]]);
+        //     }
+
+        //     for (let j = 0; j < newScoredArea.length; j++) {
+        //         for (let k = 0; k < newScoredArea[j].length; k++) {
+        //             console.log(newScoredArea[j][k]);
+        //             console.log(linkedTile[i]);
+        //             // if (newScoredArea[j][k] !== linkedTile[i]) {
+        //             //     newScoredArea.push([linkedTile[i]]);
+        //             // }
+        //             console.log(
+        //                 [
+        //                     newScoredArea[j][k][0],
+        //                     newScoredArea[j][k][1] + 1,
+        //                 ].toString()
+        //             );
+        //             console.log(
+        //                 [linkedTile[i][0], linkedTile[i][1]].toString()
+        //             );
+        //             console.log(
+        //                 [
+        //                     newScoredArea[j][k][0] + 1,
+        //                     newScoredArea[j][k][1],
+        //                 ].toString()
+        //             );
+        //             if (
+        //                 [linkedTile[i][0], linkedTile[i][1]].toString() ===
+        //                     [
+        //                         newScoredArea[j][k][0],
+        //                         newScoredArea[j][k][1] + 1,
+        //                     ].toString() ||
+        //                 [linkedTile[i][0], linkedTile[i][1]].toString() ===
+        //                     [
+        //                         newScoredArea[j][k][0] + 1,
+        //                         newScoredArea[j][k][1],
+        //                     ].toString()
+        //             ) {
+        //                 console.log("hello");
+        //                 newScoredArea[j].push(linkedTile[i]);
+        //                 // if (
+        //                 //     !visitedNode2.includes(linkedTile[i].toString())
+        //                 // ) {
+        //                 //     console.log("hello2");
+        //                 //     // visitedNode2.push(linkedTile[i].toString());
+
+        //                 //     // console.log(visitedNode2);
+        //                 // }
+        //             }
+        //         }
+        //     }
+        //     }
+
+        // }
     };
-
-    // const CheckCalculateScoredArea = (linkedTile, tempScoredAreaSize) => {
-    //     let visitedNode = [];
-    //     let tempScoredAreaSize = [];
-
-    //     linkedTile.forEach((elem) => {
-    //         let calculateScoredTile = 0;
-    //         elem.forEach((data) => {
-    //             if (!visitedNode.includes(data.toString())) {
-    //                 visitedNode.push(data.toString());
-    //                 calculateScoredTile += 1;
-    //             }
-    //         });
-    //         tempScoredAreaSize.push(calculateScoredTile);
-    //     });
-    // };
 
     const calculateScoredAreaSize = (tempMatrix, tile, scoredTile) => {
         let linkedTile = [];
         let scoredArea = [];
-        let calculateScoredTileArea = 4;
+        // let calculateScoredTileArea = 4;
 
-        CheckLinkedTile(tempMatrix, tile, scoredTile, linkedTile)
+        CheckLinkedTile(tempMatrix, tile, scoredTile, linkedTile);
         CheckScoredArea(linkedTile, scoredArea, 2);
 
-        console.log(linkedTile);
-        console.log(scoredArea);
-
-        for (let i = 0; i < scoredArea.length; i++) {
-            if (scoredArea[i + 1] !== 4 && i !== scoredArea.length - 1) {
-                calculateScoredTileArea =
-                    calculateScoredTileArea + scoredArea[i + 1];
-            } else if (scoredArea[i + 1] === 4 && i !== scoredArea.length - 1) {
-                scoredAreaSize.push(calculateScoredTileArea);
-                calculateScoredTileArea = 4;
-            } else if (i === scoredArea.length - 1) {
-                scoredAreaSize.push(calculateScoredTileArea);
-            }
-        }
+        // for (let i = 0; i < scoredArea.length; i++) {
+        //     if (scoredArea[i + 1] !== 4 && i !== scoredArea.length - 1) {
+        //         calculateScoredTileArea =
+        //             calculateScoredTileArea + scoredArea[i + 1];
+        //     } else if (scoredArea[i + 1] === 4 && i !== scoredArea.length - 1) {
+        //         scoredAreaSize.push(calculateScoredTileArea);
+        //         calculateScoredTileArea = 4;
+        //     } else if (i === scoredArea.length - 1) {
+        //         scoredAreaSize.push(calculateScoredTileArea);
+        //     }
+        // }
     };
 
     const TransformTile = (matrix, tile, scoredTile) => {
@@ -220,22 +332,22 @@ const App = () => {
 
         calculateScoredAreaSize(tempMatrix, tile1, scoredTile1);
         calculateScoredAreaSize(tempMatrix, tile2, scoredTile2);
-    
+
         tempMatrix.forEach((elem, i) => {
-          elem.forEach((data, j) => {
-            if (data === scoredTile1 || data === scoredTile2) {
-              tempMatrix[i][j] = emptyTile;
-            }
-          });
+            elem.forEach((data, j) => {
+                if (data === scoredTile1 || data === scoredTile2) {
+                    tempMatrix[i][j] = emptyTile;
+                }
+            });
         });
-    
+
         ArrangeTile(tempMatrix, emptyTile);
         TransformTile(tempMatrix, tile1, scoredTile1);
         TransformTile(tempMatrix, tile2, scoredTile2);
-    
+
         let tempScore = score;
         scoredAreaSize.forEach((element) => {
-          tempScore += element ** 2;
+            tempScore += element ** 2;
         });
         setScore(tempScore);
         setScoredAreaSize([]);
